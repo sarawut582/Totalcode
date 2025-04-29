@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Teacher {
+  Teach_ID   Int     @id @default(autoincrement())
+  Teach_Name String
+  Teach_User String  @unique
+  Teach_Pass String
+  courses    Course_Detail[]
+}
+
+model Course_Detail {
+  Course_ID   String  @id
+  Course_Name String
+  Teach_ID    Int
+  Start_Time  String  @default("00:00:00")
+  End_Time    String  @default("00:00:00") 
+  teacher     Teacher @relation(fields: [Teach_ID], references: [Teach_ID])
+  classrooms  ClassRoom[]
+  studentChecks Student_Check[]
+}
+
+model Student {
+  Student_ID       Int     @id
+  Student_Name     String
+  Student_Email    String
+  Student_Username String
+  Student_Password String
+  classrooms       ClassRoom[]
+  studentChecks    Student_Check[]
+}
+
+model ClassRoom {
+  Class_no   Int      @id @default(autoincrement())
+  Course_ID  String
+  Student_ID Int
+  Check_Status String
+  Class_Date  DateTime
+  Class_Time  DateTime
+  Section     String   // เพิ่ม field section
+  course      Course_Detail @relation(fields: [Course_ID], references: [Course_ID])
+  student     Student       @relation(fields: [Student_ID], references: [Student_ID])
+}
+
+model Student_Check {
+  Check_no    Int      @id @default(autoincrement())
+  Course_ID   String 
+  Check_Date  DateTime
+  Check_Time  String  @default("00:00:00")
+  Student_ID  Int
+  Check_Status String
+  course      Course_Detail @relation(fields: [Course_ID], references: [Course_ID])
+  student     Student       @relation(fields: [Student_ID], references: [Student_ID])
+}
